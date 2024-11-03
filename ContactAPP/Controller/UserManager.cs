@@ -1,4 +1,5 @@
-﻿using ContactAPP.Models;
+﻿using ContactAPP.Exceptions;
+using ContactAPP.Models;
 using ContactAPP.Type;
 using System;
 using System.Collections.Generic;
@@ -66,6 +67,10 @@ namespace ContactAPP.Controller
 
         public void ModifyUser(User user, string firstName, string lastName, bool isAdmin, bool isActive)
         {
+            if(user == null)
+            {
+                throw new NoSuchUserExistException("No Such User Found");
+            }
             user.FirstName = firstName;
             user.LastName = lastName;
             user.IsAdmin = isAdmin;
@@ -73,7 +78,12 @@ namespace ContactAPP.Controller
         }
         public User FindUser(int userId)
         {
-            return _users.FirstOrDefault(u => u.UserId == userId && u.IsActive);
+            User user = _users.FirstOrDefault(u => u.UserId == userId && u.IsActive);
+            if(user == null)
+            {
+                throw new NoSuchUserExistException($"NO Such User With this id : {userId} available");
+            }
+            return user;
         }
 
         public List<User> GetAllUsers()
@@ -92,6 +102,10 @@ namespace ContactAPP.Controller
         public Contact FindContact(int contactId, User user)
         {
             Contact contact = user.Contacts.Where(c =>  c.ContactId == contactId && c.IsActive).FirstOrDefault();
+            if(contact == null)
+            {
+                throw new NoSuchContactExistException("No Such Contact Found");
+            }
             return contact;
         }
 
@@ -113,6 +127,10 @@ namespace ContactAPP.Controller
 
         public void ModifyContact(Contact contact, string firstName, string lastName, bool isActive)
         {
+            if(contact == null)
+            {
+                throw new NoSuchContactExistException("No such Contact available");
+            }
             contact.FirstName = firstName;
             contact.LastName = lastName;
             contact.IsActive = isActive;

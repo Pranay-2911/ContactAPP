@@ -1,4 +1,5 @@
 ﻿using ContactAPP.Controller;
+using ContactAPP.Exceptions;
 using ContactAPP.Models;
 using ContactAPP.Type;
 using System;
@@ -16,17 +17,21 @@ namespace ContactAPP.Presentation
 
         public void ShowMenu()
         {
-            Console.WriteLine("Enter the Id To Access the Operation");
-            int id = int.Parse(Console.ReadLine());
-            var user = _userManager.FindUser(id);
-
-            if (user != null)
+            try
             {
+                Console.WriteLine("Enter the Id To Access the Operation");
+                int id = int.Parse(Console.ReadLine());
+                var user = _userManager.FindUser(id);
                 FindMenu(user);
-                return;
             }
-            Console.WriteLine($"NO Such User With this id : {id} available");
-
+            catch (NoSuchUserExistException nu)
+            {
+                Console.WriteLine(nu.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         public void FindMenu(User user)
@@ -101,12 +106,13 @@ namespace ContactAPP.Presentation
 
         public void ModifyUser()
         {
-            Console.WriteLine("Enter the User ID to Modify the user ");
-            int id = int.Parse(Console.ReadLine()); 
-
-            var user = _userManager.FindUser(id);
-            if (user != null)
+            try
             {
+                Console.WriteLine("Enter the User ID to Modify the user ");
+                int id = int.Parse(Console.ReadLine());
+
+                var user = _userManager.FindUser(id);
+
                 Console.WriteLine("Enter the First Name");
                 string firstName = Console.ReadLine();
                 Console.WriteLine("Enter the Last Name");
@@ -119,9 +125,16 @@ namespace ContactAPP.Presentation
                 _userManager.ModifyUser(user, firstName, lastName, isAdmin, isActive);
 
                 Console.WriteLine("Succesfully Modified");
-                return;
             }
-            Console.WriteLine("No Such User Found)");
+            catch (NoSuchUserExistException nu)
+            {
+                Console.WriteLine(nu.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+             
 
 
 
@@ -133,9 +146,12 @@ namespace ContactAPP.Presentation
 
             bool deleted = _userManager.DeleteUser(userId);
             if (deleted)
-                Console.WriteLine("User delete successfully.");
-            else
-                Console.WriteLine("User not found or already inactive.");
+            {
+                Console.WriteLine("User delete successfully");
+                return;
+            }
+       
+            Console.WriteLine("User not found or already inactive");
         }
 
         public void DisplayAllUsers()
@@ -147,12 +163,12 @@ namespace ContactAPP.Presentation
                 foreach (var user in users)
                 {
                     Console.WriteLine($"UserID: {user.UserId}, Name: {user.FirstName} {user.LastName}, IsAdmin: {user.IsAdmin}");
+                    return;
                 }
             }
-            else
-            {
-                Console.WriteLine("No active users found.");
-            }
+            
+            Console.WriteLine("No active users found.");
+            
         }
 
         public void FindUser()
@@ -164,11 +180,11 @@ namespace ContactAPP.Presentation
             if (user != null)
             {
                 Console.WriteLine($"UserID: {user.UserId}, Name: {user.FirstName} {user.LastName}, IsAdmin: {user.IsAdmin}, IsActive: {user.IsActive}");
+                return;
             }
-            else
-            {
-                Console.WriteLine("User not found or inactive.");
-            }
+           
+            Console.WriteLine("User not found or inactive.");
+            
         }
 
 
@@ -271,13 +287,13 @@ namespace ContactAPP.Presentation
 
         public void ModifyContact(User user)
         {
-            Console.WriteLine("Enter the Contact No to Modify");
-            int id = int.Parse (Console.ReadLine());
-
-            var contact = _userManager.FindContact(id, user);
-
-            if (contact != null)
+            try
             {
+                Console.WriteLine("Enter the Contact No to Modify");
+                int id = int.Parse(Console.ReadLine());
+
+                var contact = _userManager.FindContact(id, user);
+
                 Console.WriteLine("Enter The First Name ");
                 string firstName = Console.ReadLine();
                 Console.WriteLine("Enter the Last Name");
@@ -287,10 +303,16 @@ namespace ContactAPP.Presentation
 
                 _userManager.ModifyContact(contact, firstName, lastName, isActive);
                 Console.WriteLine("Succesfully modified");
-                return;
             }
-
-            Console.WriteLine("No Such Contact Found");
+            catch (NoSuchContactExistException nc)
+            {
+                Console.WriteLine(nc.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+               
         }
         public void DeleteContact(User user)
         {
@@ -327,31 +349,47 @@ namespace ContactAPP.Presentation
 
         public void FindContact(User User)
         {
-            Console.WriteLine("Enter the Contact Id");
-            int id  = int.Parse(Console.ReadLine());
-
-            var contact = _userManager.FindContact(id, User);
-            if (contact != null)
+            try
             {
+                Console.WriteLine("Enter the Contact Id");
+                int id = int.Parse(Console.ReadLine());
+
+                var contact = _userManager.FindContact(id, User);
+
                 Console.WriteLine($"Contact Id {contact.ContactId}, Name : {contact.FirstName} {contact.LastName}");
-                return;
             }
-            Console.WriteLine("No Contact With this Id is Available");
+            catch (NoSuchContactExistException nc)
+            {
+                Console.WriteLine(nc.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+              
 
            
         }
         // Contact Deatail Staff Operation
         public void OperationOnContactDetails(User user)
         {
-            Console.WriteLine("Enter The Contact Id To access The contact detail operation");
-            int id = int.Parse(Console.ReadLine());
-            var contact = _userManager.FindContact(id, user);
-            if (contact != null)
+            try
             {
+                Console.WriteLine("Enter The Contact Id To access The contact detail operation");
+                int id = int.Parse(Console.ReadLine());
+                var contact = _userManager.FindContact(id, user);
                 ContactDetailMenu(contact);
-                return;
             }
-            Console.WriteLine("No Such Contact Found");
+            catch (NoSuchContactExistException nfe)
+            {
+                Console.WriteLine(nfe.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+
         }
 
         public void ContactDetailMenu(Contact contact)
